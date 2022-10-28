@@ -4,6 +4,7 @@ import com.coding.bankaccount.dto.AccountArithmeticDto;
 import com.coding.bankaccount.dto.Converter.GetAccountDtoConverter;
 import com.coding.bankaccount.dto.CreateAccountDto;
 import com.coding.bankaccount.dto.GetAccountDto;
+import com.coding.bankaccount.dto.TransferMoneyDto;
 import com.coding.bankaccount.entity.Account;
 import com.coding.bankaccount.entity.Transaction;
 import com.coding.bankaccount.entity.TransactionType;
@@ -11,6 +12,7 @@ import com.coding.bankaccount.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +79,7 @@ public class AccountService {
     }
 
     public GetAccountDto deleteAccount(String accountId) {
-        Account account = accountRepository.findById(accountId).orElseThrow(() -> new EntityNotFoundException(accountId+" "+"bulunamadı"));
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new EntityNotFoundException(accountId + " " + "bulunamadı"));
         this.accountRepository.delete(account);
         return converter.convert(account);
     }
@@ -85,6 +87,15 @@ public class AccountService {
     protected Account getAccountById(String id) {
 
         return accountRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("account not found"));
+    }
+
+    @Transactional
+    public TransferMoneyDto transferMoney(TransferMoneyDto transferMoneyDto) {
+        Account senderAccount = getAccountById(transferMoneyDto.getSenderAccountId());
+        Account receiverAccount = getAccountById(transferMoneyDto.getReceiverAccountId());
+        senderAccount.setBalance(senderAccount.getBalance().subtract(transferMoneyDto.getAmount()));
+        receiverAccount.setBalance(receiverAccount.getBalance().add(transferMoneyDto.getAmount()));
+        return transferMoneyDto;
     }
 
     public List<GetAccountDto> getAccountList() {
