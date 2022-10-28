@@ -109,6 +109,7 @@ public class AccountService {
                 receiverAccount,
                 TransactionType.TRANSFER
         ));
+
         senderAccount.setTransactions(senderTransactions);
         receiverAccount.setTransactions(receiverTransactions);
         accountRepository.save(senderAccount);
