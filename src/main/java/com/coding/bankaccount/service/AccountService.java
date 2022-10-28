@@ -95,6 +95,24 @@ public class AccountService {
         Account receiverAccount = getAccountById(transferMoneyDto.getReceiverAccountId());
         senderAccount.setBalance(senderAccount.getBalance().subtract(transferMoneyDto.getAmount()));
         receiverAccount.setBalance(receiverAccount.getBalance().add(transferMoneyDto.getAmount()));
+        ArrayList<Transaction> senderTransactions= new ArrayList<>();
+        ArrayList<Transaction> receiverTransactions= new ArrayList<>();
+        senderTransactions.add(new Transaction(
+            LocalDateTime.now(),
+            transferMoneyDto.getAmount(),
+            senderAccount,
+            TransactionType.TRANSFER
+        ));
+        receiverTransactions.add(new Transaction(
+                LocalDateTime.now(),
+                transferMoneyDto.getAmount(),
+                receiverAccount,
+                TransactionType.TRANSFER
+        ));
+        senderAccount.setTransactions(senderTransactions);
+        receiverAccount.setTransactions(receiverTransactions);
+        accountRepository.save(senderAccount);
+        accountRepository.save(receiverAccount);
         return transferMoneyDto;
     }
 

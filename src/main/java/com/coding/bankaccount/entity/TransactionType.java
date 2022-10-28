@@ -1,5 +1,5 @@
 package com.coding.bankaccount.entity;
 
 public enum TransactionType{
- INITIAL,ADD,SUB
+ INITIAL,ADD,SUB,TRANSFER
 }
